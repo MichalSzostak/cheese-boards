@@ -122,6 +122,72 @@ describe("Database tests:", () => {
         expect(userBoards.email).toBe("bravo@email.com");
         expect(userBoards.id).toBe(1);
         expect(userBoards).toBeInstanceOf(User);
+    })
 
+    it('Multiple boards can be added to a User', async () => {
+        const user = await User.create({
+            name: "John Doe",
+            email: "email@email.com"})
+        const board1 = await Board.create({
+            type: "Hard",
+            description: "A hard cheese",
+            rating: 5})
+        const board2 = await Board.create({
+            type: "Soft",
+            description: "A soft cheese",
+            rating: 4})
+        await user.addBoard(board1)
+        await user.addBoard(board2)
+        const userBoards = await user.getBoards()
+        expect(userBoards[0].type).toBe("Hard");
+        expect(userBoards[0].description).toBe("A hard cheese");
+        expect(userBoards[0].rating).toBe(5);
+        expect(userBoards[0].id).toBe(1);
+        expect(userBoards[0]).toBeInstanceOf(Board);
+        expect(userBoards[1].type).toBe("Soft");
+        expect(userBoards[1].description).toBe("A soft cheese");
+        expect(userBoards[1].rating).toBe(4);
+        expect(userBoards[1].id).toBe(2);
+        expect(userBoards[1]).toBeInstanceOf(Board);
+    })
+
+    if('A Board can have many Cheeses, and a Cheese can be on many Boards', async () =>{
+        const board1 = await Board.create({
+            type: "Hard",
+            description: "A hard cheese",
+            rating: 5})
+        const board2 = await Board.create({
+            type: "Soft",
+            description: "A soft cheese",
+            rating: 4})
+        const cheese1 = await Cheese.create({
+            title: "Cheddar",
+            description: "A hard cheese"})
+        const cheese2 = await Cheese.create({
+            title: "Brie",
+            description: "A soft cheese"})
+        await board1.addCheese(cheese1)
+        await board1.addCheese(cheese2)
+        await board2.addCheese(cheese1)
+        await board2.addCheese(cheese2)
+        const board1Cheeses = await board1.getCheeses()
+        expect(board1Cheeses[0].title).toBe("Cheddar");
+        expect(board1Cheeses[0].description).toBe("A hard cheese");
+        expect(board1Cheeses[0].id).toBe(1);
+        expect(board1Cheeses[0]).toBeInstanceOf(Cheese);
+        expect(board1Cheeses[1].title).toBe("Brie");
+        expect(board1Cheeses[1].description).toBe("A soft cheese");
+        expect(board1Cheeses[1].id).toBe(2);
+        expect(board1Cheeses[1]).toBeInstanceOf(Cheese);
+        const board2Cheeses = await board2.getCheeses()
+        expect(board2Cheeses[0].title).toBe("Cheddar");
+        expect(board2Cheeses[0].description).toBe("A hard cheese");
+        expect(board2Cheeses[0].id).toBe(1);
+        expect(board2Cheeses[0]).toBeInstanceOf(Cheese);
+        expect(board2Cheeses[1].title).toBe("Brie");
+        expect(board2Cheeses[1].description).toBe("A soft cheese");
+        expect(board2Cheeses[1].id).toBe(2);
+        expect(board2Cheeses[1]).toBeInstanceOf(Cheese);
+    
     })
 })
